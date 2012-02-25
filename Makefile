@@ -7,6 +7,12 @@ SUPPORT = $(wildcard support/*.js)
 
 all: mocha.js mocha.css
 
+0: all
+	mkzero-gfxmonk --resolve-links -p dist node-mocha.xml
+
+node-mocha-local.xml: all node-mocha.xml
+	0local -p ./dist node-mocha.xml
+
 mocha.css: test/browser/style.css
 	cp -f $< $@
 

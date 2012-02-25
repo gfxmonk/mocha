@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type='text/xsl' href='interface.xsl'?>
+<interface xmlns="http://zero-install.sourceforge.net/2004/injector/interface" uri="http://gfxmonk.net/dist/0install/node-mocha.xml">
+	<name>node-mocha</name>
+	<summary>JS test runner</summary>
+	<publish xmlns="http://gfxmonk.net/dist/0install" mode="third-party"/>
+	<description>
+ [![Build Status](https://secure.travis-ci.org/visionmedia/mocha.png)](http://travis-ci.org/visionmedia/mocha)
+
+  [![Mocha test framework](http://f.cl.ly/items/3l1k0n2A1U3M1I1L210p/Screen%20Shot%202012-02-24%20at%202.21.43%20PM.png)](http://visionmedia.github.com/mocha)
+
+  Mocha is a simple, flexible, fun JavaScript test framework for node.js and the browser. For more information view the [documentation](http://visionmedia.github.com/mocha).
+
+## Contributors
+
+```
+project: mocha
+commits: 502
+files  : 86
+authors: 
+  352	Tj Holowaychuk          70.1%
+   98	TJ Holowaychuk          19.5%
+   21	Guillermo Rauch         4.2%
+    6	James Carr              1.2%
+    4	Joshua Krall            0.8%
+    3	Ben Lindsey             0.6%
+    3	Nathan Rajlich          0.6%
+    2	FARKAS Mt           0.4%
+    2	Quang Van               0.4%
+    1	Steve Mason             0.2%
+    1	Yuest Wang              0.2%
+    1	hokaccha                0.2%
+    1	David Henderson         0.2%
+    1	Fedor Indutny           0.2%
+    1	Fredrik Lindin          0.2%
+    1	Harry Brundage          0.2%
+    1	Konstantin Kfer      0.2%
+    1	Maciej Maecki         0.2%
+    1	Raynos                  0.2%
+    1	Ryunosuke SATO          0.2%
+```
+	</description>
+	<homepage>http://visionmedia.github.com/mocha/</homepage>
+	<rich-description xmlns="http://gfxmonk.net/dist/0install">
+		<div xmlns="http://www.w3.org/1999/xhtml">
+			<p>
+				<a href="http://travis-ci.org/visionmedia/mocha">
+					<img alt="Build Status" src="https://secure.travis-ci.org/visionmedia/mocha.png"/>
+				</a>
+			</p>
+			<p>
+				<a href="http://visionmedia.github.com/mocha">
+					<img alt="Mocha test framework" src="http://f.cl.ly/items/3l1k0n2A1U3M1I1L210p/Screen%20Shot%202012-02-24%20at%202.21.43%20PM.png"/>
+				</a>
+			</p>
+			<p>Mocha is a simple, flexible, fun JavaScript test framework for node.js and the browser. For more information view the <a href="http://visionmedia.github.com/mocha">documentation</a>.</p>
+			<h2 id="contributors">Contributors</h2>
+			<p>
+				<code>project: mocha commits: 502 files  : 86 authors:    352   Tj Holowaychuk          70.1%    98   TJ Holowaychuk          19.5%    21   Guillermo Rauch         4.2%     6   James Carr              1.2%     4   Joshua Krall            0.8%     3   Ben Lindsey             0.6%     3   Nathan Rajlich          0.6%     2   FARKAS Mt           0.4%     2   Quang Van               0.4%     1   Steve Mason             0.2%     1   Yuest Wang              0.2%     1   hokaccha                0.2%     1   David Henderson         0.2%     1   Fedor Indutny           0.2%     1   Fredrik Lindin          0.2%     1   Harry Brundage          0.2%     1   Konstantin Kfer      0.2%     1   Maciej Maecki         0.2%     1   Raynos                  0.2%     1   Ryunosuke SATO          0.2%</code>
+			</p>
+		</div>
+	</rich-description>
+	<group main="dist/mocha/bin/mocha">
+		<command name="run" path="dist/mocha/bin/mocha">
+			<runner interface="http://gfxmonk.net/dist/0install/node.js.xml"/>
+		</command>
+		<requires interface="http://gfxmonk.net/dist/0install/commander.js.xml">
+			<version not-before="0.5"/>
+		</requires>
+		<command name="test">
+			<runner interface="http://repo.roscidus.com/devel/make"/>
+			<arg>test-all</arg>
+			<requires interface="http://gfxmonk.net/dist/0install/should.js.xml"/>
+		</command>
+		<requires interface="http://gfxmonk.net/dist/0install/debug.js.xml"/>
+		<environment insert="dist/bin" mode="prepend" name="PATH"/>
+		<environment insert="dist" mode="prepend" name="NODE_PATH"/>
+		<implementation id="sha1new=8790ca861c2eb82415675918b5234dc108ab150d" released="2012-02-25" version="0.13.0-post">
+			<manifest-digest sha256="85fda490433940658340662a63a6356db3931457fb1447aa7e7664c762d0217c"/>
+			<archive href="http://gfxmonk.net/dist/0install/node-mocha/node-mocha-0.13.0-post.tgz" size="30720"/>
+		</implementation>
+	</group>
+</interface>
