@@ -99,10 +99,6 @@ program.on('interfaces', function(){
 module.paths.push(cwd, join(cwd, 'node_modules'));
 
 program.on('require', function(mod){
-  var abs = path.existsSync(mod)
-    || path.existsSync(mod + '.js');
-
-  if (abs) mod = join(cwd, mod);
   var loaded = require(mod);
   if(loaded.hasOwnProperty('mocha_hooks')) {
     require_injected_hooks.push(loaded.mocha_hooks);
