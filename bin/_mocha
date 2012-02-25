@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env apollo
 
 /**
  * Module dependencies.
@@ -8,18 +8,20 @@ var program = require('commander')
   , exec = require('child_process').exec
   , path = require('path')
   , resolve = path.resolve
-  , mocha = require('../')
+  , mocha = require('mocha')
   , utils = mocha.utils
   , reporters = mocha.reporters
   , interfaces = mocha.interfaces
   , Context = mocha.Context
   , Runner = mocha.Runner
   , Suite = mocha.Suite
+  , Runnable = mocha.Runnable
   , vm = require('vm')
   , fs = require('fs')
   , join = path.join
   , cwd = process.cwd()
-  , require_injected_hooks = [];
+  , require_injected_hooks = []
+  , collection = require('apollo:collection');
 
 /**
  * Files.
@@ -31,6 +33,7 @@ var files = [];
  * Images.
  */
 
+var __dirname = '/tmp/TODO'; // XXX implement this if you use growl
 var images = {
     fail: __dirname + '/../images/error.png'
   , pass: __dirname + '/../images/ok.png'
@@ -96,8 +99,6 @@ program.on('interfaces', function(){
 
 // -r, --require
 
-module.paths.push(cwd, join(cwd, 'node_modules'));
-
 program.on('require', function(mod){
   var loaded = require(mod);
   if(loaded.hasOwnProperty('mocha_hooks')) {
@@ -121,7 +122,8 @@ try {
 
 // parse args
 
-program.parse(process.argv);
+var node_style_argv = ['node'].concat(process.argv);
+program.parse(node_style_argv);
 
 // infinite stack traces
 
@@ -130,9 +132,68 @@ Error.stackTraceLimit = Infinity; // TODO: config
 // reporter
 
 var suite = new Suite('', new Context)
-  , Base = require('../lib/reporters/base')
-  , Reporter = require('../lib/reporters/' + program.reporter)
+  , Base = require('mocha-lib/reporters/base')
+  , Reporter = require('mocha-lib/reporters/' + program.reporter)
   , ui = interfaces[program.ui](suite);
+
+
+
+// apollo / sjs specific patching
+var add_apollo_hooks = null;
+(function() {
+  mocha.Runnable.prototype.__wrap = function(fn) {
+    if(!fn) { return fn; };
+    return function(cb) {
+      if(fn.length > 0) {
+        throw("oops! don't know how to deal with this...");
+      }
+      try {
+        fn.call(this);
+      } catch(e) {
+        e.stack = e.file + ':' + e.line;
+        throw e;
+      }
+      cb();
+    };
+  };
+    
+  // monkey-patch runnable to capture test output
+  add_apollo_hooks = function(runner) {
+    var logging = require('apollo:logging');
+    runner.on('test', function(test) {
+      test.log_calls = [];
+      logging.setConsole({
+        log: function() { test.log_calls.push(Array.prototype.slice.call(arguments)); }
+      });
+    });
+    runner.on('test end', function(test) {
+      logging.setConsole(null);
+    });
+
+    runner.on('fail', function(test, err){
+      if(test.log_calls && test.log_calls.length > 0) {
+        //err.stack = err.stack || '';
+        err.additional_context = "---- log capture:";
+        test.log_calls.forEach(function(args) {
+          err.additional_context += "\n";
+          err.additional_context += args[0];
+          args.slice(1).forEach(function(arg) {
+            err.additional_context += " " + JSON.stringify(arg);
+          });
+        });
+      }
+    });
+  };
+})();
+
+var add_require_injected_hooks = function(runner) {
+  require_injected_hooks.forEach(function(hooks) {
+    collection.each(hooks, function(hook, event) {
+      runner.on(event, hook);
+    });
+  });
+};
+
 
 // --no-colors
 
@@ -235,7 +296,6 @@ load(files, function(){
 function load(files, fn) {
   var pending = files.length;
   files.forEach(function(file){
-    delete require.cache[file];
     suite.emit('pre-require', global, file);
     suite.emit('require', require(file), file);
     suite.emit('post-require', global, file);
@@ -257,7 +317,9 @@ function add_require_injected_hooks(runner) {
 function run(suite, fn) {
   suite.emit('run');
   var runner = new Runner(suite);
+  add_apollo_hooks(runner);
   add_require_injected_hooks(runner);
+
   var reporter = new Reporter(runner);
   runner.globals(program.globals);
   if (program.ignoreLeaks) runner.ignoreLeaks = true;

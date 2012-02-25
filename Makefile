@@ -7,6 +7,9 @@ SUPPORT = $(wildcard support/*.js)
 
 all: mocha.js mocha.css
 
+0: index.js
+	mkzero-gfxmonk --resolve-links -p bin -p dist apollo-mocha.xml
+
 mocha.css: test/browser/style.css
 	cp -f $< $@
 

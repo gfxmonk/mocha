@@ -1,0 +1,34 @@
+<?xml version="1.0" ?>
+<?xml-stylesheet type='text/xsl' href='interface.xsl'?>
+<interface uri="http://gfxmonk.net/dist/0install/apollo-mocha.xml" xmlns="http://zero-install.sourceforge.net/2004/injector/interface">
+	<name>apollo-mocha</name>
+	<summary>JS test runner</summary>
+	<publish mode="third-party" xmlns="http://gfxmonk.net/dist/0install"/>
+	<description>
+Mocha is a simple, flexible, fun JavaScript test framework for node.js and the browser. For more information view the [documentation](http://visionmedia.github.com/mocha).
+
+This project is a port of visionmedia's mocha for the [apollo](http://onilabs.com/apollo) runtime, with minimal changes.
+	</description>
+	<homepage>http://visionmedia.github.com/mocha/</homepage>
+	<rich-description xmlns="http://gfxmonk.net/dist/0install">
+		<div xmlns="http://www.w3.org/1999/xhtml">
+			<p>Mocha is a simple, flexible, fun JavaScript test framework for node.js and the browser. For more information view the <a href="http://visionmedia.github.com/mocha">documentation</a>.</p>
+			<p>This project is a port of visionmedia's mocha for the <a href="http://onilabs.com/apollo">apollo</a> runtime, with minimal changes.</p>
+		</div>
+	</rich-description>
+	<group main="bin/mocha.sjs">
+		<command name="run" path="bin/mocha.sjs">
+			<runner interface="http://gfxmonk.net/dist/0install/apollo.xml"/>
+		</command>
+		<requires interface="http://gfxmonk.net/dist/0install/commander.js.xml">
+			<version not-before="0.5"/>
+		</requires>
+		<requires interface="http://gfxmonk.net/dist/0install/debug.js.xml"/>
+		<environment insert="bin" mode="prepend" name="PATH"/>
+		<environment insert="dist" mode="prepend" name="NODE_PATH"/>
+		<implementation id="sha1new=de45aec06a9f63d08fd7258330a0544c0a9a3867" released="2012-02-25" version="0.13.0-post1">
+			<manifest-digest sha256="ca1abab44b04e8472c1544c3e8b15eb5d70130da606b768effb5b1b930cf52d0"/>
+			<archive href="http://gfxmonk.net/dist/0install/apollo-mocha/apollo-mocha-0.13.0-post1.tgz" size="31129"/>
+		</implementation>
+	</group>
+</interface>
