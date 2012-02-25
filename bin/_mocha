@@ -269,7 +269,13 @@ function run(suite, fn) {
 // enable growl notifications
 
 function growl(runner, reporter) {
-  var notify = require('growl');
+  var notify;
+  try {
+    notify = require('growl');
+  } catch(e) {
+    console.log("growl failed to load (" + e + ") - skipping");
+    return;
+  }
 
   runner.on('end', function(){
     var stats = reporter.stats;
