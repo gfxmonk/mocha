@@ -5,3 +5,8 @@ node_modules
 *.sock
 testing
 _mocha.js
+jsmockito
+node-gently
+sinon.js
+smoke
+debug

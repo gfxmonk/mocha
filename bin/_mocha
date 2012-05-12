@@ -170,7 +170,21 @@ var add_apollo_hooks = null;
     runner.on('test', function(test) {
       test.log_calls = [];
       logging.setConsole({
-        log: function() { test.log_calls.push(Array.prototype.slice.call(arguments)); }
+        log: function() {
+          var args = Array.prototype.slice.call(arguments);
+          var msg = "";
+          args.forEach(function(arg) {
+            if(msg.length > 0) msg += " ";
+            if(arg.toString === String.prototype.toString) {
+              msg += arg;
+            } else if (arg.toString === Object.prototype.toString) {
+              msg += JSON.stringify(arg);
+            } else {
+              msg += arg;
+            }
+          });
+          test.log_calls.push(msg);
+        }
       });
     });
     runner.on('test end', function(test) {
@@ -179,15 +193,7 @@ var add_apollo_hooks = null;
 
     runner.on('fail', function(test, err){
       if(test.log_calls && test.log_calls.length > 0) {
-        //err.stack = err.stack || '';
-        err.additional_context = "---- log capture:";
-        test.log_calls.forEach(function(args) {
-          err.additional_context += "\n";
-          err.additional_context += args[0];
-          args.slice(1).forEach(function(arg) {
-            err.additional_context += " " + JSON.stringify(arg);
-          });
-        });
+        err.additional_context = "---- log capture:\n" + test.log_calls.join("\n");
       }
     });
   };
