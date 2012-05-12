@@ -100,7 +100,14 @@ program.on('interfaces', function(){
 // -r, --require
 
 program.on('require', function(mod){
-  var loaded = require(mod);
+  try {
+    var loaded = require(mod);
+  } catch(e) {
+    console.log("ERROR: could not require " + mod);
+    process.exit();
+    return;
+  }
+
   if(loaded.hasOwnProperty('mocha_hooks')) {
     require_injected_hooks.push(loaded.mocha_hooks);
   };
