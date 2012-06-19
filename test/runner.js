@@ -2,13 +2,14 @@
 var mocha = require('../')
   , Suite = mocha.Suite
   , Runner = mocha.Runner
-  , Test = mocha.Test;
+  , Test = mocha.Test
+  , Context = mocha.Context;
 
 describe('Runner', function(){
   var suite, runner;
 
   beforeEach(function(){
-    suite = new Suite(null, 'root');
+    suite = new Suite('root', new Context());
     runner = new Runner(suite);
   })
 
@@ -43,6 +44,55 @@ describe('Runner', function(){
       runner.globals().should.include('foo');
       runner.globals().should.include('bar');
     })
+  })
+
+  describe('.runTests()', function(){
+    it('should allow afterEach hook to fail the test', function(done) {
+      var test = new Test("test 1", function(done) { done(); });
+      suite.addTest(test);
+      suite.afterEach(function() {
+        this.test.fail(new Error("verify failure"));
+      });
+      var errors = [];
+      runner.on('fail', function(test, err) {
+        errors.push(err);
+      });
+      runner.runTests(suite, function() {
+        try {
+          errors.length.should.equal(1);
+          errors[0].message.should.equal("verify failure");
+          runner.failures.should.equal(1);
+          done();
+        } catch(e) {
+          done(e);
+        }
+      });
+    });
+
+    it('should not allow afterEach hook to shadow the reason for a failed test', function(done) {
+      var test = new Test("test 1", function(done) { throw new Error("test failure"); });
+      suite.addTest(test);
+      var called = false;
+      suite.afterEach(function() {
+        called = true;
+        this.test.fail(new Error("verify failure"));
+      });
+
+      var errors = [];
+      runner.on('fail', function(test, err) {
+        errors.push(err);
+      });
+      runner.runTests(suite, function(e) {
+        try {
+          errors.length.should.equal(1);
+          errors[0].message.should.equal("test failure");
+          called.should.be.true;
+          done();
+        } catch(e) {
+          done(e);
+        }
+      });
+    });
   })
 
   describe('.checkGlobals(test)', function(){
